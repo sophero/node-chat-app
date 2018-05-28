@@ -20,14 +20,34 @@ io.on('connection', socket => {
   // Print message when websocket connection established
   console.log('New user connected');
 
+  // socket.emit emits event to that socket (a single connection), whereas io.emit emits event to every connection.
+  socket.emit('newMessage', {
+    from: 'Admin',
+    text: 'Welcome to the chat app!',
+    createdAt: new Date().getTime()
+  });
+
+  socket.broadcast.emit('newMessage', {
+    from: 'Admin',
+    text: 'New user joined',
+    createdAt: new Date().getTime()
+  });
+
   // Listen for newMessage event from client
   socket.on('createMessage', message => {
     console.log('New message:', message);
-    // socket.emit emits event to a single connection, whereas io.emit emits event to every connection.
-    io.emit('newMessage', {
+
+    // io.emit('newMessage', {
+    //   from: message.from,
+    //   text: message.text,
+    //   createdAt: Date()
+    // });
+
+    // socket.broadcast.emit emits event to every websocket client except the socket it's called on
+    socket.broadcast.emit('newMessage', {
       from: message.from,
       text: message.text,
-      createdAt: Date()
+      createdAt: new Date().getTime()
     });
   });
 
