@@ -20,24 +20,15 @@ io.on('connection', socket => {
   // Print message when websocket connection established
   console.log('New user connected');
 
-  // Send custom 'newEmail' event to client
-  socket.emit('newEmail', {
-    from: 'hey@you.com',
-    text: 'Just established a connection!',
-    createdAt: Date()
-  });
-
-  // Send newMessage event to client
-  socket.emit('newMessage', {
-    from: 'sophia',
-    text: 'Eureka!',
-    createdAt: Date()
-  });
-
   // Listen for newMessage event from client
   socket.on('createMessage', message => {
-    message.createdAt = Date();
     console.log('New message:', message);
+    // socket.emit emits event to a single connection, whereas io.emit emits event to every connection.
+    io.emit('newMessage', {
+      from: message.from,
+      text: message.text,
+      createdAt: Date()
+    });
   });
 
   // Websocket disconnection event

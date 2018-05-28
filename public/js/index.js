@@ -3,12 +3,6 @@ var socket = io();
 // Connection event handler
 socket.on('connect', function() {
   console.log('Connected to server');
-
-  // Send new message to server
-  socket.emit('createMessage', {
-    from: 'hey@you.com',
-    text: "What's happening!"
-  });
 });
 
 // Listen for disconnect event
