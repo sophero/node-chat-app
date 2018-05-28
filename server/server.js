@@ -3,15 +3,14 @@ const http = require('http');
 const express = require('express');
 const socketIO = require('socket.io');
 
+const { generateMessage } = require('./utils/message');
 const publicPath = path.join(__dirname, '/../public');
 const port = process.env.PORT || 3000;
 
 // Set express() variable
 var app = express();
-
 // http.createServer(app) is the built-in function invoked when express().listen() is called
 var server = http.createServer(app);
-
 // Create websocket server
 var io = socketIO(server);
 
@@ -20,30 +19,24 @@ io.on('connection', socket => {
   // Print message when websocket connection established
   console.log('New user connected');
 
-  // socket.emit emits event to that socket (a single connection), whereas io.emit emits event to every connection.
-  socket.emit('newMessage', {
-    from: 'Admin',
-    text: 'Welcome to the chat app!',
-    createdAt: new Date().getTime()
-  });
+  // socket.emit emits event to that socket (a single connection)
+  socket.emit(
+    'newMessage',
+    generateMessage('Admin', 'Welcome to the chat app!')
+  );
 
-  socket.broadcast.emit('newMessage', {
-    from: 'Admin',
-    text: 'New user joined',
-    createdAt: new Date().getTime()
-  });
+  // socket.broadcast.emit emits event to every websocket client except the socket it's called on
+  socket.broadcast.emit(
+    'newMessage',
+    generateMessage('Admin', 'New user joined')
+  );
 
   // Listen for newMessage event from client
   socket.on('createMessage', message => {
     console.log('New message:', message);
+    // io.emit emits event to every connection.
+    io.emit('newMessage', generateMessage(message.from, message.text));
 
-    // io.emit('newMessage', {
-    //   from: message.from,
-    //   text: message.text,
-    //   createdAt: Date()
-    // });
-
-    // socket.broadcast.emit emits event to every websocket client except the socket it's called on
     socket.broadcast.emit('newMessage', {
       from: message.from,
       text: message.text,
