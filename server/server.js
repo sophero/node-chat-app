@@ -15,11 +15,32 @@ var server = http.createServer(app);
 // Create websocket server
 var io = socketIO(server);
 
-// Print message when new websocket connected
+// Set websocket connection event handler
 io.on('connection', socket => {
+  // Print message when websocket connection established
   console.log('New user connected');
 
-  // Print message when a client disconnects
+  // Send custom 'newEmail' event to client
+  socket.emit('newEmail', {
+    from: 'hey@you.com',
+    text: 'Just established a connection!',
+    createdAt: Date()
+  });
+
+  // Send newMessage event to client
+  socket.emit('newMessage', {
+    from: 'sophia',
+    text: 'Eureka!',
+    createdAt: Date()
+  });
+
+  // Listen for newMessage event from client
+  socket.on('createMessage', message => {
+    message.createdAt = Date();
+    console.log('New message:', message);
+  });
+
+  // Websocket disconnection event
   socket.on('disconnect', () => {
     console.log('User was disconnected');
   });
