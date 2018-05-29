@@ -32,16 +32,19 @@ io.on('connection', socket => {
   );
 
   // Listen for newMessage event from client
-  socket.on('createMessage', message => {
+  socket.on('createMessage', (message, callback) => {
     console.log('New message:', message);
     // io.emit emits event to every connection.
     io.emit('newMessage', generateMessage(message.from, message.text));
 
-    socket.broadcast.emit('newMessage', {
-      from: message.from,
-      text: message.text,
-      createdAt: new Date().getTime()
-    });
+    callback('This is from the server');
+
+    // socket.broadcast.emit emits event to every websocket client except the socket it's called on
+    // socket.broadcast.emit('newMessage', {
+    //   from: message.from,
+    //   text: message.text,
+    //   createdAt: new Date().getTime()
+    // });
   });
 
   // Websocket disconnection event
