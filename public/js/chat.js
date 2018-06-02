@@ -1,6 +1,7 @@
 // Set socket.io variable. io() available from library at /socket.io/socket.io.js
 var socket = io();
 
+// Scroll to bottom if reading last message
 function scrollToBottom() {
   // Selectors
   var messages = jQuery('#messages');
