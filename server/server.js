@@ -28,15 +28,16 @@ io.on('connection', socket => {
       return callback('Name and room name are required.');
     }
     
+    users.removeUser(socket.id)
+    var user = users.addUser(socket.id, params.name, params.room);
+    if (!user) return callback('Sorry, display name already taken! Please try again.');
+    
     socket.join(params.room); 
     // Built-in socket.io methods for rooms: socket.join(rm), socket.leave(rm)
     // Room-specific versions of socket.io methods:
     // io.emit -> io.to('The Office Fans').emit // to all sockets in the specified room
     // socket.broadcast.emit -> socket.broadcast.to('The Office Fans').emit
     // socket.emit -> already user/socket-specific so targeting by room redundant
-    users.removeUser(socket.id)
-    users.addUser(socket.id, params.name, params.room);
-    
     io.to(params.room).emit('updateUserList', users.getUserList(params.room));
     
     socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat app!')); // socket.emit emits event to that socket (a single client connection)

@@ -1,18 +1,16 @@
-// addUser(id, name, room)
-// removeUser(id)
-// getUser(id)
-// getUserList(room)
-
 class Users {
   constructor() {
     this.users = [];
   }
   addUser(id, name, room) {
-    var user = { id, name, room };
-    this.users.push(user);
+    var newUser = { id, name: name.toLowerCase(), room: room.toLowerCase() };
+    var match = this.users.filter(user => user.name === newUser.name);
+    if (match.length > 0) {
+      return;
+    }
+    this.users.push(newUser);
     console.log('userlist:', this.users);
-    
-    return user;
+    return newUser;
   }
   removeUser(id) {
     var user = this.getUser(id);
