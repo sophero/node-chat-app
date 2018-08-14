@@ -47,18 +47,21 @@ io.on('connection', socket => {
 
   // Listen for createMessage event from client
   socket.on('createMessage', (message, callback) => {
-    console.log('New message:', message);
-    // io.emit emits event to every connection.
-    io.emit('newMessage', generateMessage(message.from, message.text));
-    // Invoke callback function - clears message input
-    callback();
+    var user = users.getUser(socket.id);
+    if (user && isRealString(message.text)) {
+      io.to(user.room).emit('newMessage', generateMessage(user.name, message.text)); // io.emit emits event to every connection (socket).
+    }
+    callback(); // Invoke callback function - clears message input
   });
 
   socket.on('createLocationMessage', coords => {
-    io.emit(
-      'newLocationMessage',
-      generateLocationMessage('Admin', coords.latitude, coords.longitude)
-    );
+    var user = users.getUser(socket.id);
+    if (user) {
+      io.to(user.room).emit(
+        'newLocationMessage',
+        generateLocationMessage(user.name, coords.latitude, coords.longitude)
+      );
+    }
   });
 
   // Websocket disconnection event
