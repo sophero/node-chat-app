@@ -25,11 +25,29 @@ function scrollToBottom() {
 // Connection event handler. Using anonymous functions instead of ES6 arrow functions since this code will run in the browser.
 socket.on('connect', function() {
   console.log('Connected to server');
+
+  var params = jQuery.deparam(window.location.search);
+  socket.emit('join', params, function(err) {
+    if (err) {
+      alert(err);
+      window.location.href = '/';
+    } else {
+      console.log('No error');
+    }
+  });
 });
 
 // Listen for disconnect event
 socket.on('disconnect', function() {
   console.log('Disconnected from server');
+});
+
+socket.on('updateUserList', function(users) {
+  var ol = jQuery('<ol></ol>');
+  users.forEach(function(user) {
+    ol.append(jQuery('<li></li>').text(user));
+  });
+  jQuery('#users').html(ol);
 });
 
 // Listen for new message and render to page
