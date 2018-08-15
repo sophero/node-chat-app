@@ -14,6 +14,12 @@ var server = http.createServer(app); // http.createServer(app) is the built-in f
 var io = socketIO(server); // Create websocket server
 var users = new Users();
 
+// Supply room names
+app.get('/api/rooms', (req, res) => {
+  var roomList = users.getRoomList();
+  res.send(roomList);
+});
+
 // Set websocket connection event handler
 io.on('connection', socket => {
 
